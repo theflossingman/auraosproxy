@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura OS - Family Dashboard</title>
+    <meta name="description" content="A beautiful family PWA dashboard inspired by Umbrel OS">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    
+    <!-- PWA Install Prompt -->
+    <script src="scripts/pwa-install.js" defer></script>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="background">
+        <div class="gradient-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+        </div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen login-screen">
+        <div class="login-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">Aura</div>
+                </div>
+                <h1 class="app-title">Aura OS</h1>
+                <p class="app-subtitle">Family Dashboard</p>
+            </div>
+            
+            <div class="users-grid">
+                <a href="#" class="user-card" data-user="max" onclick="showPasswordModal('max', 'M', 'avatar-1'); return false;">
+                    <div class="user-avatar">
+                        <div class="avatar-gradient avatar-1"></div>
+                        <span class="user-initial">M</span>
+                    </div>
+                    <h3 class="user-name">Max</h3>
+                    <p class="user-status">Online</p>
+                </a>
+                
+                <a href="#" class="user-card" data-user="gigi" onclick="showPasswordModal('gigi', 'G', 'avatar-2'); return false;">
+                    <div class="user-avatar">
+                        <div class="avatar-gradient avatar-2"></div>
+                        <span class="user-initial">G</span>
+                    </div>
+                    <h3 class="user-name">Gigi</h3>
+                    <p class="user-status">Online</p>
+                </a>
+                
+                <a href="#" class="user-card" data-user="marco" onclick="showPasswordModal('marco', 'M', 'avatar-3'); return false;">
+                    <div class="user-avatar">
+                        <div class="avatar-gradient avatar-3"></div>
+                        <span class="user-initial">M</span>
+                    </div>
+                    <h3 class="user-name">Marco</h3>
+                    <p class="user-status">Online</p>
+                </a>
+                
+                <a href="#" class="user-card" data-user="dezi" onclick="showPasswordModal('dezi', 'D', 'avatar-4'); return false;">
+                    <div class="user-avatar">
+                        <div class="avatar-gradient avatar-4"></div>
+                        <span class="user-initial">D</span>
+                    </div>
+                    <h3 class="user-name">Dezi</h3>
+                    <p class="user-status">Online</p>
+                </a>
+                
+                <a href="#" class="user-card" data-user="sevi" onclick="showPasswordModal('sevi', 'S', 'avatar-5'); return false;">
+                    <div class="user-avatar">
+                        <div class="avatar-gradient avatar-5"></div>
+                        <span class="user-initial">S</span>
+                    </div>
+                    <h3 class="user-name">Sevi</h3>
+                    <p class="user-status">Online</p>
+                </a>
+                
+                <div class="user-card add-user">
+                    <div class="add-icon">+</div>
+                    <h3 class="user-name">Add User</h3>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p class="version">v1.0.0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="password-modal hidden">
+        <div class="modal-overlay" onclick="closePasswordModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Enter Password</h3>
+                <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="password-user-info">
+                    <div class="password-avatar">
+                        <div class="avatar-gradient avatar-1"></div>
+                        <span class="password-user-initial">M</span>
+                    </div>
+                    <h4 class="password-user-name">Max</h4>
+                </div>
+                <div class="password-input-group">
+                    <input type="password" id="passwordInput" class="password-input" placeholder="Enter password" onkeypress="handlePasswordKeyPress(event)">
+                    <div class="password-toggle" onclick="togglePasswordVisibility()">
+                        <span id="passwordToggleIcon">👁️</span>
+                    </div>
+                </div>
+                <div id="passwordError" class="password-error hidden">Incorrect password. Please try again.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="authenticateUser()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aura Tracker App Screen -->
+    <div id="auraTrackerScreen" class="screen app-screen hidden">
+        <div class="app-container">
+            <!-- App Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="closeApp('aura-tracker')">
+                        <span>&larr;</span>
+                        <span>Back</span>
+                    </button>
+                    <h2 class="app-title">Aura Tracker</h2>
+                </div>
+                <div class="header-right">
+                    <button class="refresh-btn" onclick="refreshAuraData()" title="Refresh Aura Data">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6"/>
+                            <path d="M1 20v-6h6"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                    </button>
+                    <button class="settings-btn" onclick="viewDetails()">?</button>
+                </div>
+            </header>
+
+            <!-- App Content -->
+            <main class="app-main">
+                <!-- Notification Container -->
+                <div id="notificationContainer" class="notification-container"></div>
+                
+                <div class="people-grid">
+                    <div class="person-card" onclick="selectPerson('max')">
+                        <h3 class="person-name">Max</h3>
+                        <div class="card-middle">
+                            <span class="aura-text">Aura</span>
+                            <span class="aura-number">0</span>
+                        </div>
+                        <div class="card-controls">
+                            <button class="card-btn card-btn-minus" onclick="event.stopPropagation(); cardAction('max', 'decrement')">−</button>
+                            <button class="card-btn card-btn-plus" onclick="event.stopPropagation(); cardAction('max', 'increment')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="person-card" onclick="selectPerson('gigi')">
+                        <h3 class="person-name">Gigi</h3>
+                        <div class="card-middle">
+                            <span class="aura-text">Aura</span>
+                            <span class="aura-number">0</span>
+                        </div>
+                        <div class="card-controls">
+                            <button class="card-btn card-btn-minus" onclick="event.stopPropagation(); cardAction('gigi', 'decrement')">−</button>
+                            <button class="card-btn card-btn-plus" onclick="event.stopPropagation(); cardAction('gigi', 'increment')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="person-card" onclick="selectPerson('marco')">
+                        <h3 class="person-name">Marco</h3>
+                        <div class="card-middle">
+                            <span class="aura-text">Aura</span>
+                            <span class="aura-number">0</span>
+                        </div>
+                        <div class="card-controls">
+                            <button class="card-btn card-btn-minus" onclick="event.stopPropagation(); cardAction('marco', 'decrement')">−</button>
+                            <button class="card-btn card-btn-plus" onclick="event.stopPropagation(); cardAction('marco', 'increment')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="person-card" onclick="selectPerson('dezi')">
+                        <h3 class="person-name">Dezi</h3>
+                        <div class="card-middle">
+                            <span class="aura-text">Aura</span>
+                            <span class="aura-number">0</span>
+                        </div>
+                        <div class="card-controls">
+                            <button class="card-btn card-btn-minus" onclick="event.stopPropagation(); cardAction('dezi', 'decrement')">−</button>
+                            <button class="card-btn card-btn-plus" onclick="event.stopPropagation(); cardAction('dezi', 'increment')">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="person-card" onclick="selectPerson('sevi')">
+                        <h3 class="person-name">Sevi</h3>
+                        <div class="card-middle">
+                            <span class="aura-text">Aura</span>
+                            <span class="aura-number">0</span>
+                        </div>
+                        <div class="card-controls">
+                            <button class="card-btn card-btn-minus" onclick="event.stopPropagation(); cardAction('sevi', 'decrement')">−</button>
+                            <button class="card-btn card-btn-plus" onclick="event.stopPropagation(); cardAction('sevi', 'increment')">+</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboardScreen" class="screen dashboard-screen hidden">
+        <div class="dashboard-container">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <div class="logo-small">Aura</div>
+                    <h2 class="dashboard-title">Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-avatar-small">
+                            <div class="avatar-gradient avatar-1"></div>
+                            <span class="user-initial-small">M</span>
+                        </div>
+                        <div class="user-details">
+                            <h3 class="user-name-small">Max</h3>
+                            <p class="user-status-small">Online</p>
+                        </div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="dashboard-main">
+                <!-- Action Cards -->
+                <section class="actions-section">
+                    <h2 class="section-title">Quick Actions</h2>
+                    <div class="actions-grid">
+                        <div class="action-card" onclick="openApp('aura-tracker')">
+                            <div class="action-icon">🌟</div>
+                            <h4>Aura Tracker</h4>
+                            <p>Track your aura</p>
+                        </div>
+                        
+                        <div class="action-card" onclick="openApp('photos')">
+                            <div class="action-icon">🖼️</div>
+                            <h4>Photos</h4>
+                            <p>View your memories</p>
+                        </div>
+                        
+                        <div class="action-card" onclick="openApp('notes')">
+                            <div class="action-icon">📝</div>
+                            <h4>Notes</h4>
+                            <p>Quick notes</p>
+                        </div>
+                        
+                        <div class="action-card" onclick="openApp('settings')">
+                            <div class="action-icon">⚙️</div>
+                            <h4>Settings</h4>
+                            <p>System settings</p>
+                        </div>
+                    </div>
+                </section>
+                
+                            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // User passwords (in a real app, these would be properly hashed and secured)
+        const userPasswords = {
+            'max': '1234',
+            'gigi': '1234',
+            'marco': '1234',
+            'dezi': '1234',
+            'sevi': '1234'
+        };
+
+        let currentUser = null;
+        
+        // Aura data storage (synced from server)
+        let auraData = {
+            max: 0,
+            gigi: 0,
+            marco: 0,
+            dezi: 0,
+            sevi: 0
+        };
+        
+        // Daily aura tracking data (synced from server)
+        let dailyAuraData = {
+            max: { 
+                dezi: 0, 
+                gigi: 0, 
+                marco: 0, 
+                sevi: 0, 
+                date: getCurrentDateString() 
+            },
+            gigi: { 
+                max: 0, 
+                dezi: 0, 
+                marco: 0, 
+                sevi: 0, 
+                date: getCurrentDateString() 
+            },
+            marco: { 
+                max: 0, 
+                gigi: 0, 
+                dezi: 0, 
+                sevi: 0, 
+                date: getCurrentDateString() 
+            },
+            dezi: { 
+                max: 0, 
+                gigi: 0, 
+                marco: 0, 
+                sevi: 0, 
+                date: getCurrentDateString() 
+            },
+            sevi: { 
+                max: 0, 
+                gigi: 0, 
+                marco: 0, 
+                dezi: 0, 
+                date: getCurrentDateString() 
+            }
+        };
+        
+        // Dynamic server URL detection
+        function getServerUrl() {
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            
+            // If accessing from localhost without port, default to 3002
+            if ((hostname === 'localhost' || hostname === '127.0.0.1') && !port) {
+                return 'localhost:3002';
+            }
+            
+            // For reverse proxy, use empty string to make relative URLs
+            // This will use the same domain and path as the current page
+            if (!port || port === '80' || port === '443') {
+                return ''; // Use relative URL for reverse proxy
+            }
+            
+            // Use the current hostname and port (handles Docker port mapping)
+            if (port) {
+                return `${hostname}:${port}`;
+            }
+            
+            // Default: use same hostname with port 3002
+            return `${hostname}:3002`;
+        }
+        
+        // Refresh aura data from server
+        async function refreshAuraData() {
+            const serverUrl = getServerUrl();
+            const protocol = window.location.protocol;
+            
+            // Use relative URL for reverse proxy, absolute URL otherwise
+            const apiUrl = serverUrl ? `${protocol}//${serverUrl}/api/aura` : '/api/aura';
+            
+            try {
+                // Add spinning animation to refresh button
+                const refreshBtn = document.querySelector('.refresh-btn svg');
+                if (refreshBtn) {
+                    refreshBtn.style.animation = 'spin 1s linear infinite';
+                }
+                
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                auraData = data.auraData;
+                dailyAuraData = data.dailyAuraData;
+                
+                // Update all displays
+                updateAllAuraDisplays();
+                
+                // Show success notification
+                showAuraNotification('Data Refreshed', 'Aura data has been updated from server', 'info');
+                
+            } catch (error) {
+                console.error('Error refreshing aura data:', error);
+                showAuraNotification('Refresh Failed', 'Failed to update aura data from server', 'error');
+            } finally {
+                // Remove spinning animation
+                const refreshBtn = document.querySelector('.refresh-btn svg');
+                if (refreshBtn) {
+                    refreshBtn.style.animation = '';
+                }
+            }
+        }
+        
+        function updateAllAuraDisplays() {
+            Object.keys(auraData).forEach(person => {
+                updateAuraDisplay(person);
+            });
+        }
+        
+        // Daily limits
+        const DAILY_POSITIVE_LIMIT = 500;
+        const DAILY_NEGATIVE_LIMIT = -500;
+
+        // Helper function to get current date string
+        function getCurrentDateString() {
+            return new Date().toDateString();
+        }
+
+        // Password Modal Functions
+        function showPasswordModal(userName, userInitial, avatarClass) {
+            currentUser = userName;
+            
+            // Update modal content with user info
+            document.querySelector('.password-user-name').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+            document.querySelector('.password-user-initial').textContent = userInitial;
+            
+            // Update avatar class
+            const avatar = document.querySelector('.password-avatar .avatar-gradient');
+            avatar.className = 'avatar-gradient ' + avatarClass;
+            
+            // Clear previous input and errors
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').classList.add('hidden');
+            
+            // Show modal
+            document.getElementById('passwordModal').classList.remove('hidden');
+            
+            // Focus on password input
+            setTimeout(() => {
+                document.getElementById('passwordInput').focus();
+            }, 100);
+        }
+
+        function closePasswordModal() {
+            console.log('Closing password modal, currentUser was:', currentUser);
+            document.getElementById('passwordModal').classList.add('hidden');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').classList.add('hidden');
+            // Don't reset currentUser here - it might be needed for login
+            // currentUser = null;
+        }
+
+        function authenticateUser() {
+            const password = document.getElementById('passwordInput').value;
+            console.log('Authenticating user:', currentUser, 'with password:', password);
+            
+            if (!password) {
+                showPasswordError('Please enter a password');
+                return;
+            }
+            
+            if (password === userPasswords[currentUser]) {
+                // Successful login
+                console.log('Authentication successful for:', currentUser);
+                closePasswordModal();
+                loginUser(currentUser);
+            } else {
+                // Failed login
+                console.log('Authentication failed for:', currentUser);
+                showPasswordError('Incorrect password. Please try again.');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function showPasswordError(message) {
+            const errorElement = document.getElementById('passwordError');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('passwordToggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '👁️‍🗨️';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        function handlePasswordKeyPress(event) {
+            if (event.key === 'Enter') {
+                authenticateUser();
+            } else if (event.key === 'Escape') {
+                closePasswordModal();
+            }
+        }
+
+        // Original Functions
+        function loginUser(name) {
+            console.log('Logging in user:', name);
+            // Update dashboard with user info
+            const userInitial = name.charAt(0).toUpperCase();
+            const avatarClass = 'avatar-' + (name === 'max' ? '1' : name === 'sarah' ? '2' : '3');
+            
+            document.querySelector('.user-initial-small').textContent = userInitial;
+            document.querySelector('.user-name-small').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+            document.querySelector('.user-avatar-small .avatar-gradient').className = 'avatar-gradient ' + avatarClass;
+            
+            // Switch screens
+            console.log('Switching to dashboard...');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            console.log('Dashboard should now be visible');
+        }
+        
+        function logout() {
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+        
+        function updateDailyStatus() {
+            if (!currentUser) return;
+            
+            checkAndResetDailyData();
+            
+            // Calculate total given across all users
+            let totalGiven = 0;
+            let totalTaken = 0;
+            let activeLimits = 0;
+            
+            Object.keys(dailyAuraData[currentUser]).forEach(person => {
+                if (person !== 'date') {
+                    const amount = dailyAuraData[currentUser][person];
+                    if (amount > 0) {
+                        totalGiven += amount;
+                        activeLimits++;
+                    } else if (amount < 0) {
+                        totalTaken += Math.abs(amount);
+                        activeLimits++;
+                    }
+                }
+            });
+            
+            const dailyNetElement = document.getElementById('dailyNet');
+            const dailyLimitsElement = document.getElementById('dailyLimits');
+            
+            if (dailyNetElement) {
+                const netText = `Given: +${totalGiven} | Taken: -${totalTaken}`;
+                dailyNetElement.textContent = netText;
+                dailyNetElement.style.color = 'var(--text-primary)'; // white
+            }
+            
+            if (dailyLimitsElement) {
+                dailyLimitsElement.textContent = `Active: ${activeLimits} users`;
+                dailyLimitsElement.style.color = 'var(--text-secondary)'; // secondary color
+            }
+        }
+        
+        function updateCardLimits() {
+            if (!currentUser) return;
+            
+            checkAndResetDailyData();
+            
+            // Update limit display for each person card
+            ['max', 'gigi', 'marco', 'dezi', 'sevi'].forEach(person => {
+                if (person === currentUser) return; // Skip current user
+                
+                const limitElement = document.getElementById(`limit-${person}`);
+                if (limitElement) {
+                    const currentGiven = dailyAuraData[currentUser][person] || 0;
+                    const remainingPositive = DAILY_POSITIVE_LIMIT - Math.max(0, currentGiven);
+                    const remainingNegative = Math.abs(DAILY_NEGATIVE_LIMIT - Math.min(0, currentGiven));
+                    
+                    let limitText;
+                    if (currentGiven >= 0) {
+                        limitText = `+${remainingPositive} / -${remainingNegative}`;
+                        limitElement.style.color = '#4ade80'; // green for positive
+                    } else {
+                        limitText = `+${remainingPositive} / -${remainingNegative}`;
+                        limitElement.style.color = '#f87171'; // red for negative
+                    }
+                    
+                    limitElement.textContent = limitText;
+                }
+            });
+        }
+        
+        function openApp(app) {
+            if (app === 'aura-tracker') {
+                // Load fresh data from server when opening the app
+                refreshAuraData();
+                
+                // Disable buttons for current user's card
+                updateCardButtonStates();
+                
+                // Hide dashboard and show Aura Tracker screen
+                document.getElementById('dashboardScreen').classList.add('hidden');
+                document.getElementById('auraTrackerScreen').classList.remove('hidden');
+            } else {
+                alert('Opening ' + app + '...');
+            }
+        }
+        
+        function closeApp(app) {
+            if (app === 'aura-tracker') {
+                // Hide Aura Tracker and show dashboard
+                document.getElementById('auraTrackerScreen').classList.add('hidden');
+                document.getElementById('dashboardScreen').classList.remove('hidden');
+            }
+        }
+        
+        function selectPerson(person) {
+            alert('Selected: ' + person.charAt(0).toUpperCase() + person.slice(1));
+        }
+        
+        function updateAuraDisplay(person) {
+            const personCard = document.querySelector(`[onclick="selectPerson('${person}')"]`);
+            if (personCard) {
+                const auraNumberElement = personCard.querySelector('.aura-number');
+                if (auraNumberElement) {
+                    auraNumberElement.textContent = auraData[person];
+                }
+            }
+        }
+        
+        function cardAction(person, action) {
+            // Prevent users from modifying their own aura
+            if (person === currentUser) {
+                showAuraNotification('Access Denied', 'You cannot modify your own aura points!', 'error');
+                return;
+            }
+            
+            // Send update to server via HTTP API
+            const serverUrl = getServerUrl();
+            const protocol = window.location.protocol;
+            
+            // Use relative URL for reverse proxy, absolute URL otherwise
+            const apiUrl = serverUrl ? `${protocol}//${serverUrl}/api/aura` : '/api/aura';
+            
+            const requestBody = {
+                person,
+                action,
+                currentUser
+            };
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    showAuraNotification('Limit Reached', data.error, 'warning');
+                } else if (data.success) {
+                    // Update local data with the new value from server
+                    if (data.auraData && data.auraData[person] !== undefined) {
+                        auraData[person] = data.auraData[person];
+                        updateAuraDisplay(person);
+                    }
+                    showAuraNotification('Success', `${person.charAt(0).toUpperCase() + person.slice(1)} aura updated successfully`, 'info');
+                }
+            })
+            .catch(error => {
+                console.error('HTTP API error:', error);
+                showAuraNotification('Connection Error', 'Failed to update aura. Please try again.', 'error');
+            });
+            
+            // Add visual feedback immediately (optimistic UI)
+            const personCard = document.querySelector(`[onclick="selectPerson('${person}')"]`);
+            if (personCard) {
+                personCard.classList.add('aura-updated');
+                setTimeout(() => {
+                    personCard.classList.remove('aura-updated');
+                }, 300);
+            }
+        }
+        
+        function checkAndResetDailyData() {
+            const today = getCurrentDateString();
+            
+            // Check if it's a new day for current user
+            if (dailyAuraData[currentUser].date !== today) {
+                // Reset daily data for current user (reset all per-user limits)
+                const resetData = { date: today };
+                Object.keys(dailyAuraData[currentUser]).forEach(key => {
+                    if (key !== 'date') {
+                        resetData[key] = 0;
+                    }
+                });
+                dailyAuraData[currentUser] = resetData;
+                
+                // Save the reset data
+                localStorage.setItem('dailyAuraData', JSON.stringify(dailyAuraData));
+            }
+        }
+        
+        // Add spinning animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        function updateCardButtonStates() {
+            // Enable all buttons first
+            document.querySelectorAll('.card-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            });
+            
+            // Disable buttons for current user's card
+            if (currentUser) {
+                const currentUserCard = document.querySelector(`[onclick="selectPerson('${currentUser}')"]`);
+                if (currentUserCard) {
+                    const buttons = currentUserCard.querySelectorAll('.card-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.3';
+                        btn.style.cursor = 'not-allowed';
+                    });
+                }
+            }
+        }
+        
+        function showAuraNotification(title, message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            if (!container) return;
+            
+            // Clear any existing notifications
+            container.innerHTML = '';
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `aura-notification ${type}`;
+            notification.innerHTML = `
+                <h4>${title}</h4>
+                <p>${message}</p>
+            `;
+            
+            // Add to container
+            container.appendChild(notification);
+            
+            // Show container
+            container.classList.add('show');
+            
+            // Animate notification in
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide container after 3 seconds
+            setTimeout(() => {
+                container.classList.remove('show');
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 300);
+            }, 3000);
+        }
+        
+        function testConnection() {
+            console.log('=== CONNECTION TEST ===');
+            const serverUrl = getServerUrl();
+            const protocol = window.location.protocol;
+            const apiUrl = `${protocol}//${serverUrl}/api/aura`;
+            
+            console.log('Testing connection to:', apiUrl);
+            
+            // Test GET request first
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('GET Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('GET Response data:', data);
+                    
+                    // Test POST request
+                    return fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            person: 'test',
+                            action: 'test',
+                            currentUser: 'test'
+                        })
+                    });
+                })
+                .then(response => {
+                    console.log('POST Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('POST Response data:', data);
+                    showAuraNotification('Connection Test', 'API connection successful!', 'info');
+                })
+                .catch(error => {
+                    console.error('Connection test failed:', error);
+                    showAuraNotification('Connection Test Failed', 'API connection failed. Check console for details.', 'error');
+                });
+        }
+        
+        function viewDetails() {
+            testConnection();
+        }
+        
+        // Initialize event listeners when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modal when clicking outside
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('passwordModal');
+                if (event.target === modal) {
+                    closePasswordModal();
+                }
+            });
+            
+            // Prevent modal content clicks from closing modal
+            const modalContent = document.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
